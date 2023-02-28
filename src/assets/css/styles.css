@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  background-color: dimgray;
+}
+
 .arrow {
   position: relative;
   top: -15px;
