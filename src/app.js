@@ -1,50 +1,53 @@
-import { API_KEY } from "./config";
-
-const dataEl = document.getElementById("data");
-const searchButtonEl = document.getElementById("search");
-const searchInputEl = document.getElementById("search-input");
-const errorMessageEl = document.getElementById("error-message");
-const tableContentEl = document.getElementById("table-content");
-const tableDataEl = document.getElementById("table-data");
-
+const dataEl = document.getElementById('data');
+const searchButtonEl = document.getElementById('search-city');
+const searchInputEl = document.getElementById('search-city-input');
+const errorMessageEl = document.getElementById('error-message');
+const infoEl = document.getElementById('info');
+const cityEl = document.getElementById('city');
+const todayIconEl = document.getElementById('today-icon');
+const todayTempEl = document.getElementById('today-temp');
+const todayWindEl = document.getElementById('today-wind');
+const todayWindDirectionEl = document.getElementById('today-wind-direction');
+const windArrowEl = document.getElementById('wind-arrow');
+const hourEl = document.getElementById('hour');
+const forecastEl = document.getElementById('forecast');
+const date = new Date();
+let hour = date.getHours();
+infoEl.style.display = 'none';
 function getWeatherData(city) {
-  errorMessageEl.textContent = "";
-  dataEl.textContent = "";
-
   fetch(
-    `http://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${city}&aqi=no`
+    `http://api.weatherapi.com/v1/forecast.json?key=5da41c0a3a994cb28d6162741232002&q=${city}&days=3&aqi=yes&alerts=yes`
   )
-    .then((response) => response.json())
-    .then((data) => {
+    .then(response => response.json())
+    .then(data => {
+      errorMessageEl.textContent = '';
+      dataEl.textContent = '';
       if (data.error) {
         errorMessageEl.textContent = data.error.message;
+        infoEl.style.display = 'none';
       } else {
-        dataEl.textContent = JSON.stringify(data, null, 2);
-        // dataEl.textContent = data.current.temp_c;
-
-        let content = "";
-        for (const [key, value] of Object.entries(data.location)) {
-          content += `
-            <tr>
-                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">${key[0].toUpperCase()}${key
-            .slice(1)
-            .replaceAll("_", " ")}</td>
-                <td class="px-6 py-4">${value}</td>
-            </tr>
-          `;
+        //dataEl.textContent = JSON.stringify(data, null, 6);
+        infoEl.style.display = 'flex';
+        cityEl.textContent = data.location.name;
+        todayIconEl.innerHTML = `<img class="weather-icon" src="https:${data.current.condition.icon}" />`;
+        todayTempEl.innerHTML = `${data.current.temp_c}&deg`;
+        todayWindEl.innerHTML = `${data.current.wind_kph} km/h`;
+        todayWindDirectionEl.textContent = data.current.wind_dir;
+        windArrowEl.style.rotate = `${data.current.wind_degree}deg`;
+        hourEl.textContent = data.current.last_updated.substring(11);
+        for (const temp in data.forecast.forecastday[0].hour[hour]) {
+          console.log(temp);
         }
-
-        tableContentEl.innerHTML = content;
-        tableDataEl.classList.remove("hidden");
+        forecastEl.textContent = JSON.stringify(
+          data.forecast.forecastday[0].hour[hour],
+          null,
+          6
+        );
       }
-    })
-    .catch(() => {
-      console.log("API NIE DZIAŁA!!!!");
     });
 }
 
-searchButtonEl.addEventListener("click", () => {
+searchButtonEl.addEventListener('click', () => {
   const city = searchInputEl.value;
-
   getWeatherData(city);
 });

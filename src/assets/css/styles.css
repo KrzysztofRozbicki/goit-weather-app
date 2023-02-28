@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.arrow {
+  position: relative;
+  top: -15px;
+  width: 60px;
+  height: 60px;
+}
+
+.weather-icon {
+  position: relative;
+  top: -10px;
+}

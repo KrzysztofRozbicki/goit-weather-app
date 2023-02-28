@@ -4,14 +4,14 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="assets/css/styles.css" rel="stylesheet" />
-    <script src="app.js" type="module" defer></script>
+    <link href="./src/assets/css/styles.css" rel="stylesheet" />
+    <script src="./src/app.js" type="module" defer></script>
     <title>WeatherApp</title>
   </head>
   <body class="bg-gray-800">
-    <include src="src/components/appbar.html"></include>
+    <include src="./src/components/appbar.html"></include>
     <div class="container mx-auto max-w-[50%] my-10">
-      <include src="src/components/weatherform.html"></include>
+      <include src="./src/components/weatherform.html"></include>
       <p
         id="error-message"
         class="font-bold text-red-700 text-center text-2xl"
@@ -26,7 +26,7 @@
         <p id="today-wind" class="mb-8"></p>
         <div class="flex">
           <div id="wind-arrow" class="arrow">
-            <img src="./images/arrow.png" />
+            <img src="./src/images/arrow.png" />
           </div>
           <p id="today-wind-direction"></p>
         </div>
