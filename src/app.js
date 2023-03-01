@@ -1,19 +1,26 @@
-const dataEl = document.getElementById('data');
 const searchButtonEl = document.getElementById('search-city');
 const searchInputEl = document.getElementById('search-city-input');
 const errorMessageEl = document.getElementById('error-message');
 const infoEl = document.getElementById('info');
 const cityEl = document.getElementById('city');
-const todayIconEl = document.getElementById('today-icon');
-const todayTempEl = document.getElementById('today-temp');
-const todayWindEl = document.getElementById('today-wind');
-const todayWindDirectionEl = document.getElementById('today-wind-direction');
-const windArrowEl = document.getElementById('wind-arrow');
-const hourEl = document.getElementById('hour');
-const forecastEl = document.getElementById('forecast');
 const date = new Date();
 let hour = date.getHours();
 infoEl.style.display = 'none';
+
+const showWeather = () => {
+  const city = searchInputEl.value;
+  getWeatherData(city);
+};
+
+searchButtonEl.addEventListener('click', () => showWeather());
+
+searchInputEl.addEventListener('keypress', event => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    showWeather();
+  }
+});
+
 function getWeatherData(city) {
   fetch(
     `http://api.weatherapi.com/v1/forecast.json?key=5da41c0a3a994cb28d6162741232002&q=${city}&days=3&aqi=yes&alerts=yes`
@@ -21,33 +28,50 @@ function getWeatherData(city) {
     .then(response => response.json())
     .then(data => {
       errorMessageEl.textContent = '';
-      dataEl.textContent = '';
       if (data.error) {
         errorMessageEl.textContent = data.error.message;
         infoEl.style.display = 'none';
       } else {
-        //dataEl.textContent = JSON.stringify(data, null, 6);
         infoEl.style.display = 'flex';
         cityEl.textContent = data.location.name;
-        todayIconEl.innerHTML = `<img class="weather-icon" src="https:${data.current.condition.icon}" />`;
-        todayTempEl.innerHTML = `${data.current.temp_c}&deg`;
-        todayWindEl.innerHTML = `${data.current.wind_kph} km/h`;
-        todayWindDirectionEl.textContent = data.current.wind_dir;
-        windArrowEl.style.rotate = `${data.current.wind_degree}deg`;
-        hourEl.textContent = data.current.last_updated.substring(11);
-        for (const temp in data.forecast.forecastday[0].hour[hour]) {
-          console.log(temp);
-        }
-        forecastEl.textContent = JSON.stringify(
-          data.forecast.forecastday[0].hour[hour],
-          null,
-          6
+        console.log(data);
+        //Utowrzenie 72 elementowej tablicy obiektów, każdy obiekt to jedna godzina prognozy pogody.
+        const hoursForecast = data.forecast.forecastday.flatMap(
+          item => item.hour
         );
+        //wywołanie funkcji prognozy 3 dniowej
+        infoEl.innerHTML =
+          forecastThreeDays(hoursForecast) +
+          `<div class="swiper-pagination"></div>`;
       }
     });
 }
 
-searchButtonEl.addEventListener('click', () => {
-  const city = searchInputEl.value;
-  getWeatherData(city);
-});
+// Funkcja która przyjmuje jako parametr flatMapę prognozy godzinowej (tabele na kolejne 72 godziny) i tworzy z niej kolejne divy
+const forecastThreeDays = data => {
+  let weatherText = '';
+  const hoursInterval = 3;
+
+  for (let i = hour; i < data.length; i += hoursInterval) {
+    weatherText += `<div
+        class="flex swiper-slide  weather-box text-white text-xl flex flex-col py-6 px-6 items-center border-2 rounded-lg border-white">
+        <div><img class="weather-icon" src="https:${
+          data[i].condition.icon
+        }" /></div>
+        <p class="mb-8">${data[i].temp_c} &deg</p>
+        <p class="mb-8">${data[i].wind_kph} km/h</p>
+        <div class="flex">
+          <div class="arrow" style="transform: rotate(${
+            data[i].wind_degree + 180
+          }deg)">
+            <img src="https://raw.githubusercontent.com/KrzysztofRozbicki/goit-weather-app/main/src/images/arrow.png" />
+          </div>
+          <p>${data[i].wind_dir}</p>
+        </div>
+        <p class="mb-6">${data[i].time.substring(11)}</p>
+        <p>${data[i].time.substring(0, 10)}</p>
+        </div>
+        `;
+  }
+  return weatherText;
+};

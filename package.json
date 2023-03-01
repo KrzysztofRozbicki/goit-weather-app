@@ -4,7 +4,7 @@
   "description": "",
   "main": "tailwind.config.js",
   "scripts": {
-    "start": "parcel index.html",
+    "start": "parcel src/index.html",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -15,5 +15,8 @@
     "postcss": "^8.4.21",
     "posthtml-include": "^1.7.4",
     "tailwindcss": "^3.2.6"
+  },
+  "dependencies": {
+    "swiper": "^9.1.0"
   }
 }
